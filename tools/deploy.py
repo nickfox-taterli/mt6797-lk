@@ -80,6 +80,7 @@ def checked_image(path, kind):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--host', default='root@192.168.31.87')
+    p.add_argument('--jump', help='optional SSH ProxyJump host')
     p.add_argument('--kind', choices=['lk', 'bundle'], required=True)
     p.add_argument('--image', type=Path, required=True)
     p.add_argument('--check-only', action='store_true', help='validate local artifact without board access')
@@ -92,8 +93,10 @@ def main():
             return
         command = 'LC_ALL=C python3 -c ' + shlex.quote(REMOTE) + ' ' + ' '.join(
             shlex.quote(s) for s in [args.kind, digest, CID])
-        subprocess.run(['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=5', args.host, command],
-                       input=data, check=True)
+        ssh = ['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=5']
+        if args.jump:
+            ssh.extend(['-J', args.jump])
+        subprocess.run(ssh + [args.host, command], input=data, check=True)
     except (ValueError, OSError, KeyError, subprocess.CalledProcessError) as exc:
         p.exit(1, f'deploy: {exc}\n')
 
