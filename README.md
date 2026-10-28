@@ -32,7 +32,9 @@ cmake --build out/build-lk --target rescue
 根分区写死在 `app/x20_boot/fdt.c`：eMMC PARTUUID 为
 `8273e1ab-846f-4468-b999-ee2ea8e50a16`；TF 为
 `f20d0001-6797-4000-8000-000000000001`。TF Debian 安装时使用该 GPT 分区 GUID；
-构建不会格式化当前 TF 测试盘或安装系统。不依赖易变化的 mmcblk 编号。
+构建不执行分区或安装。不依赖易变化的 mmcblk 编号。固定 TF 卡已安装 Debian，
+首次启动、热重启和 PWRKEY 冷复位均实测通过，板端最终恢复默认 emmc 目标；
+准备脚本和证据见工作区 `docs/PLAN-PROGRESS.md` §7。
 
 bundle 只接受 kernel、dtb、initramfs 三种条目；地址固定，写目标内存前检查全部
 CRC、长度、重叠和地址。兼容现存 Image.gz-dtb；独立 DTB 则通过明确条目提供。
