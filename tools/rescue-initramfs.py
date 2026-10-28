@@ -62,7 +62,7 @@ def build(root):
         for needed in re.findall(r'Shared library: \[(.*?)\]', dynamic):
             add_elf('lib/aarch64-linux-gnu/' + needed)
 
-    for name in ['dash', 'cat', 'mount', 'umount', 'mkdir', 'ls', 'dd',
+    for name in ['dash', 'cat', 'mount', 'umount', 'mkdir', 'ls', 'dd', 'od',
                  'sync', 'sleep', 'stty', 'dmesg']:
         add_elf('bin/' + ('sh' if name == 'dash' else name), 'usr/bin/' + name)
     for name in ['blkid', 'blockdev']:
