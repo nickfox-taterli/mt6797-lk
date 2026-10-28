@@ -50,7 +50,8 @@ python3 mainline/lk/tools/bundle.py pack --kernel Image.gz-dtb --initramfs rescu
 `emmc`/`tf` 在启动错误、`reboot bootloader` 的 RTC 标记或启动窗口收到 `r` 时进入
 UART 救援；`rescue` 无条件进入。V2 协议支持有界超时、CRC、重传、重复包及取消。
 UART 下载启动强制要求 initramfs。RAM shell 只挂载 devtmpfs/proc/sysfs，不自动挂载
-MMC 或写存储。停止串口采集后，使用：
+MMC 或写存储。固定 RAM cmdline 开启标准 8250 earlycon，loglevel=4；正常 Debian
+目标保持无 earlycon。停止串口采集后，使用：
 
 ```sh
 python3 mainline/lk/tools/uart-rescue.py --port /dev/ttyACM0 --cancel

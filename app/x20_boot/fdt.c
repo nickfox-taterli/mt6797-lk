@@ -16,7 +16,8 @@ static const char production_args[] =
     "console=ttyS0,921600n8 root=PARTUUID=" ROOT_PARTUUID
     " rootfstype=ext4 rootwait loglevel=4";
 static const char rescue_args[] =
-    "console=ttyS0,921600n8 root=/dev/ram0 rdinit=/init loglevel=4";
+    "console=ttyS0,921600n8 earlycon=uart8250,mmio32,0x11002000,921600n8"
+    " root=/dev/ram0 rdinit=/init loglevel=4";
 
 static int reserved_range(void *fdt, const char *path, uint32_t addr, uint32_t size)
 {
