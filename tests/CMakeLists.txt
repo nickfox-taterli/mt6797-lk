@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.20)
+project(x20_boot_tests LANGUAGES C)
+enable_testing()
+add_subdirectory(../lib bootcore)
+add_executable(rescue-test rescue.c ../app/x20_boot/rescue.c)
+target_link_libraries(rescue-test PRIVATE bootcore)
+add_test(NAME uart-rescue COMMAND rescue-test)
+add_library(bootcore-host SHARED ${BOOTCORE_SOURCES} ../app/x20_boot/fdt.c
+    ../app/x20_boot/boot.c image-helper.c)
+target_include_directories(bootcore-host PRIVATE ../include ../lib/miniz/include ../lib/libfdt)
+target_compile_definitions(bootcore-host PRIVATE MINIZ_NO_MALLOC NDEBUG)
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+add_test(NAME boot-formats COMMAND ${Python3_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/formats.py $<TARGET_FILE:bootcore-host>)
+add_test(NAME uart-host COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/uart-host.py)
