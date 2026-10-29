@@ -81,7 +81,7 @@ linux_enter:
     mcr p15, 0, r0, c8, c7, 0
     dsb sy
     isb
-    ldr r1, =0x40080000
+    ldr r1, =0x40200000		/* KERNEL_ENTRY, keep 2 MiB aligned */
     ldr r2, =0x44000000
     mov r3, #0
     mov r4, #1

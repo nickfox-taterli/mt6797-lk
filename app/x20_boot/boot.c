@@ -19,8 +19,8 @@ int image_prepare(const void *bundle, size_t len)
     if (ret) return ret;
     const uint8_t *kernel = (void *)KERNEL_ENTRY;
     /* Linux arm64 Image, little endian. Current 6.18 Image uses text_offset=0;
-     * the existing X20 entry remains 0x40080000. Also accept the older header's
-     * 512 KiB offset at this same proven entry address.
+     * the entry is 2 MiB aligned (KASLR MIN_KIMG_ALIGN). Also accept the older
+     * header's 512 KiB offset field at the same aligned entry address.
      */
     if (written < 64 || get_le32(kernel + 56) != 0x644d5241 ||
         (get_le64(kernel + 8) != 0 && get_le64(kernel + 8) != 0x80000) ||

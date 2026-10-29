@@ -9,7 +9,10 @@
 #define BUNDLE_HEADER 0x400u
 #define BUNDLE_LBA 0x4000u
 #define KERNEL_LOAD 0x46900000u
-#define KERNEL_ENTRY 0x40080000u
+/* 2 MiB-aligned: arm64 with KASLR requires MIN_KIMG_ALIGN, otherwise the
+ * kernel prints "[Firmware Bug]: Kernel image misaligned at boot" and
+ * falls back to page-granular kernel mappings. */
+#define KERNEL_ENTRY 0x40200000u
 #define KERNEL_MAX 0x1c00000u
 #define DTB_LOAD 0x44000000u
 #define DTB_MAX 0x100000u
