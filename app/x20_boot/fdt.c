@@ -12,12 +12,17 @@
 #else
 #define ROOT_PARTUUID "8273e1ab-846f-4468-b999-ee2ea8e50a16"
 #endif
+/* loglevel=7 prints everything through KERN_INFO on the UART console
+ * (messages print when severity < console_loglevel, so 7 excludes only
+ * KERN_DEBUG "cont" lines); matches the kernel's own default and pairs
+ * with CONFIG_PRINTK_TIME=y stamps on the same console as the LK stamps.
+ */
 static const char production_args[] =
     "console=ttyS0,921600n8 root=PARTUUID=" ROOT_PARTUUID
-    " rootfstype=ext4 rootwait loglevel=4";
+    " rootfstype=ext4 rootwait loglevel=7";
 static const char rescue_args[] =
     "console=ttyS0,921600n8 earlycon=uart8250,mmio32,0x11002000"
-    " root=/dev/ram0 rdinit=/init loglevel=4";
+    " root=/dev/ram0 rdinit=/init loglevel=7";
 
 static int reserved_range(void *fdt, const char *path, uint32_t addr, uint32_t size)
 {
