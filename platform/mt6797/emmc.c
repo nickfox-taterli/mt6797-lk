@@ -106,7 +106,7 @@ int emmc_bundle_read(void *dest)
             write32(REG(0), read32(REG(0)) | 4u);
             if (wait_clear(0, 4)) break;
         }
-        if (ret) { log_error("eMMC read", ret, BUNDLE_LBA + off / 512); return ret; }
+        if (ret) { log_error("emmc", ret, BUNDLE_LBA + off / 512); return ret; }
         if (off + 512 == BUNDLE_HEADER) {
             ret = bundle_header(p, BUNDLE_MAX, &image);
             if (ret) return ret;

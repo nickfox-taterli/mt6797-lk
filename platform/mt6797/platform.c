@@ -83,8 +83,31 @@ int uart_write(const void *buf, size_t n)
     }
     return 0;
 }
+/* Kernel printk style "[    S.uuuuuu] " uptime prefix, printed from the GPT
+ * counter that platform_init() clears, so LK time starts at zero like printk
+ * time does. 13 MHz: seconds = ticks/13e6 and (ticks%13e6)/13 microseconds,
+ * both division-safe in 32 bits; the counter wraps at ~330 s, past which a
+ * long rescue wait would see the stamp restart at zero once.
+ */
+static void log_stamp(void)
+{
+    uint32_t ticks = timer_ticks();
+    uint32_t sec = ticks / 13000000u;
+    uint32_t usec = (ticks % 13000000u) / 13u;
+    char text[5];
+    char us[6];
+    for (int i = 4; i >= 0; i--) { text[i] = '0' + sec % 10u; sec /= 10u; }
+    for (int i = 0; i < 4 && text[i] == '0'; i++) text[i] = ' ';
+    for (int i = 5; i >= 0; i--) { us[i] = '0' + usec % 10u; usec /= 10u; }
+    uart_write("[", 1);
+    uart_write(text, sizeof(text));
+    uart_write(".", 1);
+    uart_write(us, sizeof(us));
+    uart_write("] ", 2);
+}
 void log_line(const char *s)
 {
+    log_stamp();
     uart_write(s, strlen(s));
     uart_write("\r\n", 2);
 }
@@ -95,11 +118,14 @@ static void hex(uint32_t value)
         text[i] = "0123456789abcdef"[(value >> (28 - 4 * i)) & 15];
     uart_write(text, sizeof(text));
 }
+/* Kernel driver style "<stage>: error=0x… context=0x…"; the stage doubles as
+ * the subsystem prefix, so failure lines parse like a printk line.
+ */
 void log_error(const char *stage, int error, uint32_t context)
 {
-    uart_write("[X20] ", 6);
+    log_stamp();
     uart_write(stage, strlen(stage));
-    uart_write(" error=0x", 9);
+    uart_write(": error=0x", 10);
     hex((uint32_t)error);
     uart_write(" context=0x", 11);
     hex(context);

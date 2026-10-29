@@ -48,7 +48,7 @@ int image_prepare(const void *bundle, size_t len)
     if (image.initrd.size)
         memcpy((void *)INITRD_LOAD, p + image.initrd.offset, image.initrd.size);
     wdt_kick();
-    log_line("[X20] bundle verified; Linux");
+    log_line("boot: bundle verified; Linux");
     wdt_disable();
     linux_enter();
 }

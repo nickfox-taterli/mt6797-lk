@@ -16,7 +16,7 @@ void rescue(void)
     uint32_t length = 0, next = 0, expected = 0;
     struct boot_image image;
     wdt_disable();
-    log_line("[X20] UART rescue V2; RAM only");
+    log_line("rescue: UART V2; RAM only");
     for (;;) {
         if (uart_read(command, 4, 1000)) continue;
         if (!memcmp(command, "PING", 4)) {
@@ -62,7 +62,7 @@ void rescue(void)
             }
             reply("BOOT", next);
             int ret = image_prepare(data, length);
-            log_error("RAM boot", ret, next);
+            log_error("ram-boot", ret, next);
             length = next = 0;
             reply("FAIL", 0);
         } else {
