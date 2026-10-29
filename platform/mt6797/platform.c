@@ -6,6 +6,7 @@
 #define GPT 0x10008000u
 #define RGU 0x10007000u
 #define PWRAP 0x1000d000u
+#define PIO 0x10005000u
 
 uint32_t timer_ticks(void) { return read32(GPT + 0x48); }
 bool expired(uint32_t start, uint32_t ms)
@@ -16,6 +17,21 @@ void wdt_kick(void) { write32(RGU + 8, 0x1971); }
 void wdt_disable(void) { write32(RGU, 0x22000000); }
 void platform_init(void)
 {
+    /*
+     * Board marker: light all six indicator LEDs (GPIO196-201, high-active
+     * through NMOS gates; schematic "KEY_LED_EXT26M" sheet) so a solid row
+     * proves BL31 reached LK.  GPIO mode 0, then DOUT high before switching
+     * DIR to output to avoid a glitch-low window (register layout from the
+     * kernel pinctrl-mt6797 tables: MODE 0x300+0x10*(pin/8), 4-bit fields;
+     * DIR 0x10*(pin/32) and DOUT 0x100+0x10*(pin/32), SET alias at +4).
+     * Linux gpio-leds reclaims the pins and turns them into its triggers
+     * early in boot, so a row stuck solid means the kernel never took over.
+     */
+    write32(PIO + 0x480, read32(PIO + 0x480) & ~0xffff0000u); /* 196-199 */
+    write32(PIO + 0x490, read32(PIO + 0x490) & ~0x000000ffu); /* 200-201 */
+    write32(PIO + 0x164, 0x3f0); /* DOUT bank 6 bits 4-9: high */
+    write32(PIO + 0x064, 0x3f0); /* DIR bank 6 bits 4-9: output */
+
     write32(GPT + 0x40, 0);
     write32(GPT + 0x40, 2);
     write32(GPT + 0x44, 0);
