@@ -7,7 +7,8 @@ import struct
 import zlib
 
 MAX = 0x800000
-SPECS = {"kernel": (2, 0x46900000, 0x40080000, MAX),
+# Keep the kernel entry in sync with include/x20/boot.h (2 MiB aligned).
+SPECS = {"kernel": (2, 0x46900000, 0x40200000, MAX),
          "dtb": (3, 0x44000000, 0, 0x100000),
          "initramfs": (4, 0x45000000, 0, MAX)}
 
